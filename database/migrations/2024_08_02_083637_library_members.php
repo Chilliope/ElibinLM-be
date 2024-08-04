@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name'); // nama
             $table->string('place_of_birth'); // tempat lahir
             $table->string('date_of_birth'); // tanggal lahir
-            $table->integer('phone'); // nomor telepon
+            $table->string('phone'); // nomor telepon
             $table->string('address'); // alamat
             $table->unsignedBigInteger('class_id'); // id kelas (table kelas)
             $table->string('image'); // profile picture

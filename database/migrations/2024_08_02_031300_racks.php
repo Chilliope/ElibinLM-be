@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // migrasi pengguna admin
-        Schema::create('users', function (Blueprint $table) {
+        // migrasi rak buku perpustakaan
+        Schema::create('racks', function (Blueprint $table) {
             $table->id();
-            $table->string('username')->unique();
-            $table->string('name'); // nama
-            $table->string('password'); // kata sandi
-            $table->string('image')
-            ->default('storage/user-picture/default.jpg'); // profile picture
+            $table->string('rack');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        //
     }
 };
