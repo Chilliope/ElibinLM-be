@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('city'); // kabupaten/kota
             $table->string('province'); // provinsi
             $table->integer('post_code'); // kode pos
-            $table->integer('phone'); // nomor telpon
+            $table->string('phone'); // nomor telpon
             $table->string('website'); // situs web
             $table->string('email'); // email
             $table->string('institutional_status'); // status kelembagaan
@@ -35,9 +35,8 @@ return new class extends Migration
             $table->string('mission'); // misi
             $table->string('short_history'); // sejarah singkat
             $table->string('opening_hours'); // jam buka
-            $table->string('library_managers'); // pengelola perpustakaan
-            $table->string('library_members'); // anggota perpustakaan
             $table->string('library_activity'); // kegiatan perpustakaan
+            $table->string('image')->nullable(); 
             $table->timestamps();
         });
     }

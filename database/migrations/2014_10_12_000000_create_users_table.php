@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name'); // nama
             $table->string('password'); // kata sandi
             $table->string('image')
-            ->default('storage/user-picture/default.jpg'); // profile picture
+            ->default('user-picture/default.jpg'); // profile picture
             $table->timestamps();
         });
     }

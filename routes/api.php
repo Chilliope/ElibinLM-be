@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\LibraryMemberController;
+use App\Http\Controllers\LibraryProfileController;
 use App\Http\Controllers\MajorController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\VisitorController;
 use Illuminate\Http\Request;
@@ -29,7 +32,7 @@ Route::prefix('/v1')->group(function () {
     // routing auth
     Route::prefix('/auth')->group(function () {
         Route::post('/signin', [AuthController::class, 'signin'])
-        ->middleware('guest');
+        ->middleware('guest:sanctum');
         Route::post('/signout', [AuthController::class, 'signout'])
         ->middleware('auth:sanctum');
     });
@@ -49,17 +52,30 @@ Route::prefix('/v1')->group(function () {
         Route::post('/member/{id}', [LibraryMemberController::class, 'update']);
         Route::delete('/member/{id}', [LibraryMemberController::class, 'destroy']);
 
+        // library profile routes
+        Route::get('/library/1', [LibraryProfileController::class, 'show']);
+        Route::post('/library/1', [LibraryProfileController::class, 'update']);
+
         // major routes
         Route::resource('/major', MajorController::class);
-
+        
         // class routes
         Route::resource('/class', ClassController::class);
-
+        
         // rack routes
         Route::resource('/rack', RackController::class);
-
+        
         // visitor routes
         Route::resource('/visitor', VisitorController::class);
+        
+        // borrower routes
+        Route::resource('/borrower', BorrowerController::class);
+
+        // profile routes
+        Route::post('/profile', [ProfileController::class, 'update']);
+
+        // get auth user
+        Route::post('/authUser', [AuthController::class, 'authUser']);
     });
 });
 

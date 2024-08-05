@@ -54,4 +54,11 @@ class AuthController extends Controller
             'status' => 'logout success'
         ], 200);
     }
+
+    public function authUser()
+    {
+        $user = Auth::user();
+
+        return $user;
+    }
 }
