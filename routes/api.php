@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowerController;
@@ -70,6 +71,9 @@ Route::prefix('/v1')->group(function () {
         
         // borrower routes
         Route::resource('/borrower', BorrowerController::class);
+
+        // admin routes
+        Route::resource('/admin', AdminController::class);
 
         // profile routes
         Route::post('/profile', [ProfileController::class, 'update']);
