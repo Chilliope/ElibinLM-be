@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrower;
+use App\Models\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,8 +34,6 @@ class BorrowerController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required',
             'class_id' => 'required|exists:class,id',
-            'book_id' => 'required|exists:books,id',
-            'amount' => 'required',
             'date_of_borrowing' => 'required',
             'date_of_return' => 'required'
         ]);
@@ -43,10 +42,37 @@ class BorrowerController extends Controller
             return response()->json($validate->errors(), 400);
         }
 
-        $borrower = Borrower::create($request->all());
+        $getLastBorrowingCode = Borrower::latest()->first();
+
+        if($getLastBorrowingCode) {
+            $borrowingCode = $getLastBorrowingCode->borrowing_code + 1;
+        } else {
+            $borrowingCode = 1;
+        }
+
+        $gate = Gate::get();
+
+        // dd($gate);
+
+        foreach ($gate as $gate) {
+            $data = [
+                'name' => $request->name,
+                'class_id' => $request->class_id,
+                'book_id' => $gate->book_id,
+                'total' => $gate->total,
+                'date_of_borrowing' => $request->date_of_borrowing,
+                'date_of_return' => $request->date_of_return,
+                'borrowing_code' => $borrowingCode
+            ];
+
+            $borrower = Borrower::create($data);
+        }
+
+        $gate = Gate::truncate();
 
         return response()->json([
-            'status' => 'success'
+            'status' => 'success',
+            'borrowing_code' => $borrower->borrowing_code
         ]);
     }
 

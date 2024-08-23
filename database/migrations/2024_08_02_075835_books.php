@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title')->unique(); // judul buku
             $table->string('slug');
             $table->string('publisher'); // penerbit
-            $table->integer('ISBN'); // International Standard Book Number
+            $table->bigInteger('ISBN'); // International Standard Book Number
             $table->string('publication_year'); // tahun terbit
             $table->string('book_spine_number'); // nomor punggung buku
             $table->integer('page_size'); // jumlah halaman

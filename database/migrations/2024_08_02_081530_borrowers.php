@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('name'); // nama
             $table->unsignedBigInteger('class_id'); // id kelas (table kelas)
             $table->unsignedBigInteger('book_id'); // id buku (table buku)
-            $table->integer('amount'); // jumlah buku
+            $table->integer('total'); // jumlah buku
             $table->string('date_of_borrowing'); // tanggal peminjaman
             $table->string('date_of_return'); // tanggal pengembalian
+            $table->string('borrowing_code'); // kode peminjaman    
             $table->timestamps();
 
             $table->foreign('class_id')->references('id')->on('class'); // relasi kelas

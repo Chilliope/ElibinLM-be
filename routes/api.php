@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\GateController;
 use App\Http\Controllers\LibraryMemberController;
 use App\Http\Controllers\LibraryProfileController;
 use App\Http\Controllers\MajorController;
@@ -75,11 +76,16 @@ Route::prefix('/v1')->group(function () {
         // admin routes
         Route::resource('/admin', AdminController::class);
 
+        // gates routes
+        Route::resource('/gates', GateController::class);
+
         // profile routes
         Route::post('/profile', [ProfileController::class, 'update']);
 
+
         // get auth user
         Route::post('/authUser', [AuthController::class, 'authUser']);
+
     });
 });
 
