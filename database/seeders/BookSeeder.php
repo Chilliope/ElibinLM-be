@@ -17,6 +17,7 @@ class BookSeeder extends Seeder
         Book::create([
             'title' => 'Laravel Up & Running',
             'slug' => Str::slug('Laravel Up & Running'),
+            'writer' => 'Mr.Lorem',
             'publisher' => 'O\'Reilly Media',
             'ISBN' => 9781492041212,
             'publication_year' => '2019',
@@ -33,6 +34,7 @@ class BookSeeder extends Seeder
         Book::create([
             'title' => 'Laravel Up & Running 2',
             'slug' => Str::slug('Laravel Up & Running 2'),
+            'writer' => 'Mr.Lorem',
             'publisher' => 'O\'Reilly Media',
             'ISBN' => 9781492041212,
             'publication_year' => '2019',
@@ -49,6 +51,7 @@ class BookSeeder extends Seeder
         Book::create([
             'title' => 'Laravel Up & Running 3',
             'slug' => Str::slug('Laravel Up & Running 3'),
+            'writer' => 'Mr.Lorem',
             'publisher' => 'O\'Reilly Media',
             'ISBN' => 9781492041212,
             'publication_year' => '2019',
