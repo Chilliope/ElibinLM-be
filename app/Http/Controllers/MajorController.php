@@ -10,7 +10,7 @@ class MajorController extends Controller
 {
     public function index()
     {
-        $major = Major::get();
+        $major = Major::paginate(10);
 
         return response()->json([
             'status' => 'success',
@@ -78,8 +78,13 @@ class MajorController extends Controller
 
         $class = ClassTable::where('major_id', $major->id)->get();
 
+        if($class->isNotEmpty()) {
+            foreach($class as $class) {
+                $class->delete();
+            }
+        }
+
         $major->delete();
-        $class->delete();
 
         return response()->json([], 204);
     }

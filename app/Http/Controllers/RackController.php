@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Rack;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RackController extends Controller
 {
     public function index()
     {
-        $rack = Rack::get();
+        $rack = Rack::paginate(10);
 
         return response()->json([
             'status' => 'success',
@@ -20,7 +21,7 @@ class RackController extends Controller
 
     public function show($id)
     {
-        $rack = Rack::where('id', $id)->get();
+        $rack = Rack::where('id', $id)->first();
 
         return response()->json([
             'status' => 'success',
@@ -30,6 +31,14 @@ class RackController extends Controller
 
     public function store(Request $request)
     {
+        $validate = Validator::make($request->all(), [
+            'rack' => 'required'
+        ]);
+
+        if($validate->fails()) {
+            return response()->json($validate->errors(), 400);
+        }
+
         $rackExisting = Rack::where('rack', $request->rack)->exists();
 
         if($rackExisting) {
@@ -49,6 +58,14 @@ class RackController extends Controller
 
     public function update(Request $request, $id)
     {
+        $validate = Validator::make($request->all(), [
+            'rack' => 'required'
+        ]);
+
+        if($validate->fails()) {
+            return response()->json($validate->errors(), 400);
+        }
+
         $rackExisting = Rack::where('rack', $request->rack)
                             ->where('id', '!=', $id)
                             ->exists();
@@ -88,13 +105,15 @@ class RackController extends Controller
             ], 404);
         }
 
-        $book = Book::where('rack_id', $rack->id)->get();
+        $books = Book::where('rack_id', $rack->id)->get();
 
-        $rack->delete();
-
-        if($book) {
-            $book->delete();
+        if($books->isNotEmpty()) {
+            foreach ($books as $book) {
+                $book->delete();
+            }
         }
+        
+        $rack->delete();        
 
         return response()->json([], 204);
     }

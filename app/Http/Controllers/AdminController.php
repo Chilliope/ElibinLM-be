@@ -11,7 +11,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $admin = User::get();
+        $admin = User::paginate(10);
 
         return response()->json([
             'status' => 'success',
@@ -60,7 +60,6 @@ class AdminController extends Controller
         $validate = Validator::make($request->all(), [
             'username' => 'required',
             'name' => 'required',
-            'password' => 'required'
         ]);
 
         if($validate->fails()) {
@@ -76,9 +75,14 @@ class AdminController extends Controller
             ], 403);
         }
 
+        if($request->password === null) {
+            $admin->password = $admin->password;
+        } else {
+            $admin->password = Hash::make($request->password);
+        }
+
         $admin->username = $request->username;
         $admin->name = $request->name;
-        $admin->password = Hash::make($request->password);
         $admin->save();
 
         return response()->json([

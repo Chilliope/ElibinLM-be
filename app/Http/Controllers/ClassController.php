@@ -11,7 +11,7 @@ class ClassController extends Controller
 {
     public function index()
     {
-        $class = ClassTable::with(['major'])->get();
+        $class = ClassTable::with(['major'])->paginate(10);
 
         return response()->json([
             'status' => 'success',
@@ -21,7 +21,7 @@ class ClassController extends Controller
 
     public function show($id)
     {
-        $class = ClassTable::with(['major'])->where('id', $id)->get();
+        $class = ClassTable::with(['major'])->where('id', $id)->first();
 
         return response()->json([
             'status' => 'success',
@@ -96,7 +96,7 @@ class ClassController extends Controller
                 'message' => 'Jurusan tidak ditemukan'
             ], 404);
         }
-        
+
         $classExisting = ClassTable::where('class', $request->class)
                                    ->where('major_id', $request->major_id)
                                    ->where('alphabet', $request->alphabet)
@@ -104,7 +104,7 @@ class ClassController extends Controller
                                    ->exists();
         
         if($classExisting) {
-            return response()->json([
+            return response()->json([   
                 'status' => 'failed',
                 'message' => 'Kelas ini sudah terdaftar'
             ], 400);
