@@ -24,7 +24,7 @@ class LibraryMemberController extends Controller
     {
         $member = LibraryMember::with(['class'])
                               ->where('id', $id)
-                              ->get();
+                              ->first();
 
         return response()->json([
             'status' => 'success',

@@ -19,6 +19,16 @@ class ClassController extends Controller
         ], 201);
     }
 
+    public function getAllClass() 
+    {
+        $class = ClassTable::with(['major'])->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $class
+        ], 201);
+    }
+
     public function show($id)
     {
         $class = ClassTable::with(['major'])->where('id', $id)->first();

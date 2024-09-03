@@ -60,13 +60,16 @@ Route::prefix('/v1')->group(function () {
 
         // major routes
         Route::resource('/major', MajorController::class);
+        Route::get('/getAllMajor', [MajorController::class, 'getAllMajor']);
         
         // class routes
         Route::resource('/class', ClassController::class);
+        Route::get('/getAllClass', [ClassController::class, 'getAllClass']);
         
         // rack routes
         Route::resource('/rack', RackController::class);
-        
+        Route::get('/getAllRack', [RackController::class, 'getAllRack']);
+
         // visitor routes
         Route::resource('/visitor', VisitorController::class);
         

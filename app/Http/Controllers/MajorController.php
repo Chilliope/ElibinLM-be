@@ -18,6 +18,16 @@ class MajorController extends Controller
         ]);
     }
 
+    public function getAllMajor()
+    {
+        $major = Major::get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $major
+        ]);
+    }
+
     public function show($id)
     {
         $major = Major::where('id', $id)->first();

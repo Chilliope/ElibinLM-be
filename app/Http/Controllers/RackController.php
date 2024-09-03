@@ -19,6 +19,16 @@ class RackController extends Controller
         ], 200);
     }
 
+    public function getAllRack()
+    {
+        $rack = Rack::get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $rack
+        ], 200);
+    }
+
     public function show($id)
     {
         $rack = Rack::where('id', $id)->first();

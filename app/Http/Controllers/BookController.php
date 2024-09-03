@@ -12,7 +12,7 @@ class BookController extends Controller
 {
     public function index()
     {
-        $book = Book::get();
+        $book = Book::with(['rack'])->get();
 
         return response()->json([
             'status' => 'success',
@@ -36,6 +36,7 @@ class BookController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'title' => 'required',
+            'writer' => 'required',
             'publisher' => 'required',
             'ISBN' => 'required',
             'publication_year' => 'required',
@@ -73,6 +74,7 @@ class BookController extends Controller
         $data = [
             'title' => $request->title,
             'slug' => Str::slug($request->title),
+            'writer' => $request->writer,
             'publisher' => $request->publisher,
             'ISBN' => $request->ISBN,
             'publication_year' => $request->publication_year,
