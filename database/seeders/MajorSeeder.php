@@ -13,8 +13,25 @@ class MajorSeeder extends Seeder
      */
     public function run(): void
     {
-        Major::create([
-            'major' => 'PPLG'
-        ]);
+        $majors = [
+            'PPLG',    // Pengembangan Perangkat Lunak dan Gim
+            'TKJ',     // Teknik Komputer dan Jaringan
+            'RPL',     // Rekayasa Perangkat Lunak
+            'MM',      // Multimedia
+            'TAV',     // Teknik Audio Video
+            'TEI',     // Teknik Elektronika Industri
+            'TKR',     // Teknik Kendaraan Ringan
+            'TBSM',    // Teknik dan Bisnis Sepeda Motor
+            'TP',      // Teknik Pemesinan
+            'TPTU',    // Teknik Pengelasan dan Teknik Umum
+            'DKV',     // Desain Komunikasi Visual
+            'BKP',     // Bisnis Konstruksi dan Properti
+        ];
+
+        foreach ($majors as $majorName) {
+            Major::create([
+                'major' => $majorName
+            ]);
+        }
     }
 }

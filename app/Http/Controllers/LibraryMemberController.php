@@ -12,7 +12,7 @@ class LibraryMemberController extends Controller
 {
     public function index()
     {
-        $member = LibraryMember::with(['class'])->get();
+        $member = LibraryMember::with(['class'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

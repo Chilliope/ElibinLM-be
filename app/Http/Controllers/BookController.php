@@ -12,7 +12,7 @@ class BookController extends Controller
 {
     public function index()
     {
-        $book = Book::with(['rack'])->get();
+        $book = Book::with(['rack'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

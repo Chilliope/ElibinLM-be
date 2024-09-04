@@ -13,11 +13,23 @@ class ClassSeeder extends Seeder
      */
     public function run(): void
     {
-        ClassTable::create([
-            'class' => 'XII',
-            'major_id' => 1,
-            'alphabet' => 'B',
-            'class_fix' => 'XII PPLG B'
-        ]);
+        $classes = [
+            ['class' => 'XII', 'major_id' => 1, 'alphabet' => 'A', 'class_fix' => 'XII PPLG A'],
+            ['class' => 'XII', 'major_id' => 1, 'alphabet' => 'B', 'class_fix' => 'XII PPLG B'],
+            ['class' => 'XII', 'major_id' => 2, 'alphabet' => 'A', 'class_fix' => 'XII TKJ A'],
+            ['class' => 'XII', 'major_id' => 2, 'alphabet' => 'B', 'class_fix' => 'XII TKJ B'],
+            ['class' => 'XII', 'major_id' => 3, 'alphabet' => 'A', 'class_fix' => 'XII RPL A'],
+            ['class' => 'XII', 'major_id' => 3, 'alphabet' => 'B', 'class_fix' => 'XII RPL B'],
+            ['class' => 'XI', 'major_id' => 1, 'alphabet' => 'A', 'class_fix' => 'XI PPLG A'],
+            ['class' => 'XI', 'major_id' => 1, 'alphabet' => 'B', 'class_fix' => 'XI PPLG B'],
+            ['class' => 'XI', 'major_id' => 2, 'alphabet' => 'A', 'class_fix' => 'XI TKJ A'],
+            ['class' => 'XI', 'major_id' => 2, 'alphabet' => 'B', 'class_fix' => 'XI TKJ B'],
+            ['class' => 'XI', 'major_id' => 3, 'alphabet' => 'A', 'class_fix' => 'XI RPL A'],
+            ['class' => 'XI', 'major_id' => 3, 'alphabet' => 'B', 'class_fix' => 'XI RPL B'],
+        ];
+
+        foreach ($classes as $classData) {
+            ClassTable::create($classData);
+        }
     }
 }

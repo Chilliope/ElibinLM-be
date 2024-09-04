@@ -10,7 +10,7 @@ class VisitorController extends Controller
 {
     public function index()
     {
-        $visitor = Visitor::with(['class'])->get();
+        $visitor = Visitor::with(['class'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

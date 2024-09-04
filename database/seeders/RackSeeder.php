@@ -13,8 +13,25 @@ class RackSeeder extends Seeder
      */
     public function run(): void
     {
-        Rack::create([
-            'rack' => 'Rak-1'
-        ]);
+        $racks = [
+            'Rak-1',
+            'Rak-2',
+            'Rak-3',
+            'Rak-4',
+            'Rak-5',
+            'Rak-6',
+            'Rak-7',
+            'Rak-8',
+            'Rak-9',
+            'Rak-10',
+            'Rak-11',
+            'Rak-12'
+        ];
+
+        foreach ($racks as $rackName) {
+            Rack::create([
+                'rack' => $rackName
+            ]);
+        }
     }
 }
