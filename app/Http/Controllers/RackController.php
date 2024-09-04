@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Validator;
 
 class RackController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rack = Rack::paginate(10);
+        $rack = Rack::where('rack', 'like', '%' . $request->search . '%')->paginate(10);
 
         return response()->json([
             'status' => 'success',

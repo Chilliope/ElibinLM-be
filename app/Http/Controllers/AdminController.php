@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $admin = User::paginate(10);
+        $admin = User::where('username', 'like', '%' . $request->search . '%')->paginate(10);
 
         return response()->json([
             'status' => 'success',

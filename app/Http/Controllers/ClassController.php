@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Validator;
 
 class ClassController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $class = ClassTable::with(['major'])->paginate(10);
+        $class = ClassTable::where('class_fix', 'like', '%' . $request->search . '%')->with(['major'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

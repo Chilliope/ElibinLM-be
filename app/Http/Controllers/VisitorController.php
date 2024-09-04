@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Validator;
 
 class VisitorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $visitor = Visitor::with(['class'])->paginate(10);
+        $visitor = Visitor::where('name', 'like', '%' . $request->search . '%')->with(['class'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

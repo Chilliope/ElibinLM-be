@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $book = Book::with(['rack'])->paginate(10);
+        $book = Book::where('title', 'like', '%' . $request->search . '%')->with(['rack'])->paginate(10);
 
         return response()->json([
             'status' => 'success',

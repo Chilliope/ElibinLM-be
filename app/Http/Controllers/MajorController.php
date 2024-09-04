@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class MajorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $major = Major::paginate(10);
+        $major = Major::where('major', 'like', '%' . $request->search . '%')->paginate(10);
 
         return response()->json([
             'status' => 'success',

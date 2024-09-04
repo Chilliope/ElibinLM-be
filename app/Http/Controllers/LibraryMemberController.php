@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Validator;
 
 class LibraryMemberController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $member = LibraryMember::with(['class'])->paginate(10);
+        $member = LibraryMember::where('name', 'like', '%' . $request->search . '%')->with(['class'])->paginate(10);
 
         return response()->json([
             'status' => 'success',
