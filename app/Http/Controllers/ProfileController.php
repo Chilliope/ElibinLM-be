@@ -16,7 +16,6 @@ class ProfileController extends Controller
         $validate = Validator::make($request->all(), [
             'username' => 'required',
             'name' => 'required',
-            'password' => 'required',
             'image' => 'required',
         ]);
 
@@ -42,9 +41,12 @@ class ProfileController extends Controller
             $user->image = 'user-picture/' . $newFileName;
         }
 
+        if($request->password) {
+            $user->password = Hash::make($request->password);
+        }
+
         $user->username = $request->username;
         $user->name = $request->name;
-        $user->password = Hash::make($request->password);
         $user->save();
 
         return response()->json([

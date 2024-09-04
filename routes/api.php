@@ -87,7 +87,7 @@ Route::prefix('/v1')->group(function () {
 
 
         // get auth user
-        Route::post('/authUser', [AuthController::class, 'authUser']);
+        Route::get('/authUser', [AuthController::class, 'authUser']);
 
     });
 });
