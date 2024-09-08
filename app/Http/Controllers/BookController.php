@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Borrower;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,13 +13,19 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $book = Book::where('title', 'like', '%' . $request->search . '%')->with(['rack'])->paginate(10);
-
+        // Ambil buku berdasarkan pencarian
+        $books = Book::where('title', 'like', '%' . $request->search . '%')
+            ->with(['rack'])
+            ->paginate(10);
+    
+        $bookCount = Book::count();
+    
         return response()->json([
             'status' => 'success',
-            'data' => $book
+            'count' => $bookCount,
+            'data' => $books
         ], 200);
-    }
+    }    
 
     public function show($slug)
     {

@@ -10,10 +10,15 @@ class VisitorController extends Controller
 {
     public function index(Request $request)
     {
-        $visitor = Visitor::where('name', 'like', '%' . $request->search . '%')->with(['class'])->paginate(10);
+        $visitor = Visitor::where('name', 'like', '%' . $request->search . '%')
+        ->with(['class'])
+        ->paginate(10);
+
+        $visitorCount = Visitor::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $visitorCount,
             'data' => $visitor
         ], 200);
     }

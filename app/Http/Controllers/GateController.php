@@ -11,39 +11,45 @@ class GateController extends Controller
 {
     public function index()
     {
-        $gate = Gate::with(['books'])->get();
+        $gate = Gate::with(['book'])->get();
+        $gateCount = Gate::count();
 
         return response()->json([
+            'count' => $gateCount,
             'data' => $gate
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        $validate = Validator::make($request->all(), [
-            'borrower_name' => 'required',
-            'book_id' => 'required',
-            'total' => 'required'
-        ]);
-
-        if($validate->fails()) {
-            return response()->json($validate->errors(), 400);
-        }
-
-        $checkGate = Gate::where('book_id', $request->book_id)->exists();
+        $checkGate = Gate::where('book_id', $id)->exists();
 
         if($checkGate) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Buku sudah ada dikeranjang'
             ], 400);
-        }
+        }   
 
-        $gate = Gate::create($request->all());
+        $data = [
+            'book_id' => $id
+        ];
+
+        $gate = Gate::create($data);
 
         return response()->json([
             'status' => 'success',
             'gate_id' => $gate->id
         ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $gate = Gate::where('id', $id)->update($request->all());
+    }
+
+    public function destroy($id)
+    {
+        $gate = Gate::where('id', $id)->delete();
     }
 }

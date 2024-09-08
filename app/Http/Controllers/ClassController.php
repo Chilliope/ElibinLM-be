@@ -11,10 +11,15 @@ class ClassController extends Controller
 {
     public function index(Request $request)
     {
-        $class = ClassTable::where('class_fix', 'like', '%' . $request->search . '%')->with(['major'])->paginate(10);
+        $class = ClassTable::where('class_fix', 'like', '%' . $request->search . '%')
+        ->with(['major'])
+        ->paginate(10);
+
+        $classCount = ClassTable::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $classCount,
             'data' => $class
         ], 201);
     }

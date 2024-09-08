@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\Borrower;
+use App\Models\ClassTable;
 use App\Models\Library;
+use App\Models\LibraryMember;
+use App\Models\Major;
+use App\Models\Rack;
+use App\Models\User;
+use App\Models\Visitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -12,10 +20,24 @@ class LibraryProfileController extends Controller
     public function show()
     {
         $library = Library::where('id', 1)->first();
+        $countBook = Book::count();
+        $countMember = LibraryMember::count();
+        $countVisitor = Visitor::count();
+        $countBorrow = Borrower::count();
+        $countLibrary = Library::count();
+        $countRack = Rack::count();
+        $countClass = ClassTable::count();
+        $countMajor = Major::count();
+        $countAdmin = User::count();
+
+        $count = [
+            $countBook, $countMember, $countVisitor, $countBorrow, $countLibrary, $countRack, $countClass, $countMajor, $countAdmin
+        ];
 
         return response()->json([
             'status' => 'success',
-            'data' => $library
+            'data' => $library,
+            'count' => $count   
         ], 200);
     }
 

@@ -12,10 +12,15 @@ class LibraryMemberController extends Controller
 {
     public function index(Request $request)
     {
-        $member = LibraryMember::where('name', 'like', '%' . $request->search . '%')->with(['class'])->paginate(10);
+        $member = LibraryMember::where('name', 'like', '%' . $request->search . '%')
+        ->with(['class'])
+        ->paginate(10);
+
+        $libraryMemberCount = LibraryMember::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $libraryMemberCount,
             'data' => $member
         ], 200);
     }

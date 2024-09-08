@@ -18,7 +18,7 @@ class Gate extends Model
         'updated_at'
     ];
 
-    function books() :  BelongsTo {
+    function book() :  BelongsTo {
         return $this->belongsTo(Book::class, 'book_id');
     }
 }

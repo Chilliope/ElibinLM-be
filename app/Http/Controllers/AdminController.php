@@ -11,10 +11,14 @@ class AdminController extends Controller
 {
     public function index(Request $request)
     {
-        $admin = User::where('username', 'like', '%' . $request->search . '%')->paginate(10);
+        $admin = User::where('username', 'like', '%' . $request->search . '%')
+        ->paginate(10);
+
+        $adminCount = User::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $adminCount,
             'data' => $admin
         ], 200);
     }

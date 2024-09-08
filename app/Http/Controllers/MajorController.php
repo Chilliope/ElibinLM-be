@@ -10,10 +10,14 @@ class MajorController extends Controller
 {
     public function index(Request $request)
     {
-        $major = Major::where('major', 'like', '%' . $request->search . '%')->paginate(10);
+        $major = Major::where('major', 'like', '%' . $request->search . '%')
+        ->paginate(10);
+
+        $majorCount = Major::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $majorCount,
             'message' => $major
         ]);
     }

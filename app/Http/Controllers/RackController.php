@@ -11,10 +11,14 @@ class RackController extends Controller
 {
     public function index(Request $request)
     {
-        $rack = Rack::where('rack', 'like', '%' . $request->search . '%')->paginate(10);
+        $rack = Rack::where('rack', 'like', '%' . $request->search . '%')
+        ->paginate(10);
+
+        $rackCount = Rack::count();
 
         return response()->json([
             'status' => 'success',
+            'count' => $rackCount,
             'data' => $rack
         ], 200);
     }

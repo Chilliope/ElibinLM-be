@@ -11,6 +11,7 @@ use App\Http\Controllers\LibraryProfileController;
 use App\Http\Controllers\MajorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RackController;
+use App\Http\Controllers\StatsController;
 use App\Http\Controllers\VisitorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -81,14 +82,20 @@ Route::prefix('/v1')->group(function () {
 
         // gates routes
         Route::resource('/gates', GateController::class);
+        Route::post('/gates/{id}', [GateController::class, 'store']);
+
+        // stats routes
+        Route::prefix('/stats')->group(function () {
+            Route::get('/member', [StatsController::class, 'member']);
+            Route::get('/visitor', [StatsController::class, 'visitor']);
+            Route::get('/borrow', [StatsController::class, 'borrow  ']);
+        });
 
         // profile routes
         Route::post('/profile', [ProfileController::class, 'update']);
 
-
         // get auth user
         Route::get('/authUser', [AuthController::class, 'authUser']);
-
     });
 });
 
