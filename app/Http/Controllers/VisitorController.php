@@ -11,7 +11,7 @@ class VisitorController extends Controller
     public function index(Request $request)
     {
         $visitor = Visitor::where('name', 'like', '%' . $request->search . '%')
-        ->with(['class'])
+        ->with(['major'])
         ->paginate(10);
 
         $visitorCount = Visitor::count();
@@ -25,7 +25,7 @@ class VisitorController extends Controller
 
     public function show($id)
     {
-        $visitor = Visitor::where('id', $id)->with(['class'])->first();
+        $visitor = Visitor::where('id', $id)->with(['major'])->first();
 
         return response()->json([
             'status' => 'success',
@@ -37,7 +37,7 @@ class VisitorController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'class_id' => 'required',
+            'major_id' => 'required',
             'role' => 'required'
         ]);
 
@@ -47,7 +47,7 @@ class VisitorController extends Controller
 
         $data = [
             'name' => $request->name,
-            'class_id' => $request->class_id,
+            'major_id' => $request->major_id,
             'role' => $request->role
         ];
 
@@ -63,7 +63,7 @@ class VisitorController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'class_id' => 'required',
+            'major_id' => 'required',
             'role' => 'required'
         ]);
 
@@ -81,7 +81,7 @@ class VisitorController extends Controller
         }
 
         $visitor->name = $request->name;
-        $visitor->class_id = $request->class_id;
+        $visitor->major_id = $request->major_id;
         $visitor->role = $request->role;
         $visitor->save();
 

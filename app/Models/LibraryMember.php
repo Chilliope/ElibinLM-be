@@ -16,7 +16,7 @@ class LibraryMember extends Model
         'updated_at'
     ];
     
-    function class() : BelongsTo {
-        return $this->belongsTo(ClassTable::class, 'class_id');
+    function major() : BelongsTo {
+        return $this->belongsTo(Major::class, 'major_id');
     }
 }

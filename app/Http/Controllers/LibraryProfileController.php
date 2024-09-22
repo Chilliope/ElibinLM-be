@@ -9,6 +9,7 @@ use App\Models\Library;
 use App\Models\LibraryMember;
 use App\Models\Major;
 use App\Models\Rack;
+use App\Models\Subject;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
@@ -28,10 +29,11 @@ class LibraryProfileController extends Controller
         $countRack = Rack::count();
         $countClass = ClassTable::count();
         $countMajor = Major::count();
+        $countSubject = Subject::count();
         $countAdmin = User::count();
 
         $count = [
-            $countBook, $countMember, $countVisitor, $countBorrow, $countLibrary, $countRack, $countClass, $countMajor, $countAdmin
+            $countBook, $countMember, $countVisitor, $countBorrow, $countLibrary, $countRack, $countClass, $countMajor,$countSubject, $countAdmin
         ];
 
         return response()->json([
@@ -87,6 +89,21 @@ class LibraryProfileController extends Controller
 
             $file->move('storage/library-image', $newFileName);
             $library->image = 'library-image/' . $newFileName;
+        }
+
+        if($request->file('signature')) {
+            if($library->signature !== null) {
+                Storage::delete($library->signature);
+            }
+
+            $file = $request->file('signature');
+            $fileExt = $file->getClientOriginalExtension();
+            $random = md5(uniqid(mt_rand(), true));                                                    
+
+            $newFileName = $random . '.' . $fileExt;
+
+            $file->move('storage/signature', $newFileName);
+            $library->signature = 'signature/' . $newFileName;
         }
 
         // $library->library_number = $request->library_number;

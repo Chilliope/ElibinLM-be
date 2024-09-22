@@ -24,7 +24,7 @@ class LibraryMemberSeeder extends Seeder
                 'date_of_birth' => $faker->date('Y-m-d', '2005-12-31'),
                 'phone' => $faker->phoneNumber,
                 'address' => $faker->address,
-                'class_id' => $faker->numberBetween(1, 12), // assuming there are 12 classes
+                'major_id' => $faker->numberBetween(1, 12), // assuming there are 12 classes
                 'image' => 'profile_' . $i . '.jpg', // just a placeholder image name
                 'created_at' => now(),
                 'updated_at' => now(),

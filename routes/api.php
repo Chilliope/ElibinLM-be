@@ -12,6 +12,8 @@ use App\Http\Controllers\MajorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\SubBookController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\VisitorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,12 +43,23 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
+        // subject routes
+        Route::resource('/subject', SubjectController::class);
+        Route::get('/getAllSubject', [SubjectController::class, 'getAllSubject']);
+
         // book routes
         Route::get('/book', [BookController::class, 'index']);
         Route::get('/book/{slug}', [BookController::class, 'show']);
         Route::post('/book', [BookController::class, 'store']);
         Route::post('/book/{slug}', [BookController::class, 'update']);
         Route::delete('/book/{slug}', [BookController::class, 'destroy']); 
+
+        // sub book routes
+        Route::get('/subBook/{bookId}', [SubBookController::class, 'index']);
+        Route::get('/subBook-detail/{id}', [SubBookController::class, 'show']);
+        Route::post('/subBook/{bookId}', [SubBookController::class, 'store']);
+        Route::put('/subBook/{id}', [SubBookController::class, 'update']);
+        Route::delete('/subBook/{id}', [SubBookController::class, 'destroy']);
         
         // library members routes
         Route::get('/member', [LibraryMemberController::class, 'index']);
@@ -54,6 +67,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('/member', [LibraryMemberController::class, 'store']);
         Route::post('/member/{id}', [LibraryMemberController::class, 'update']);
         Route::delete('/member/{id}', [LibraryMemberController::class, 'destroy']);
+        Route::get('/api/members', [LibraryMemberController::class, 'getMembersByIds']);
 
         // library profile routes
         Route::get('/library/1', [LibraryProfileController::class, 'show']);
@@ -76,6 +90,8 @@ Route::prefix('/v1')->group(function () {
         
         // borrower routes
         Route::resource('/borrower', BorrowerController::class);
+        Route::put('/borrower-return/{id}', [BorrowerController::class, 'borrowerReturn']);
+        Route::get('/getAllBorrow', [BorrowerController::class, 'getAllBorrow']);
 
         // admin routes
         Route::resource('/admin', AdminController::class);
@@ -88,7 +104,7 @@ Route::prefix('/v1')->group(function () {
         Route::prefix('/stats')->group(function () {
             Route::get('/member', [StatsController::class, 'member']);
             Route::get('/visitor', [StatsController::class, 'visitor']);
-            Route::get('/borrow', [StatsController::class, 'borrow  ']);
+            Route::get('/borrow', [StatsController::class, 'borrow']);
         });
 
         // profile routes

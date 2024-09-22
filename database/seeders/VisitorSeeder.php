@@ -21,7 +21,7 @@ class VisitorSeeder extends Seeder
         for ($i = 1; $i <= 14; $i++) {
             Visitor::create([
                 'name' => $faker->name,
-                'class_id' => $faker->numberBetween(1, 12), // assuming there are 12 classes
+                'major_id' => $faker->numberBetween(1, 12), // assuming there are 12 classes
                 'role' => $roles[array_rand($roles)],
                 'created_at' => now(),
                 'updated_at' => now(),

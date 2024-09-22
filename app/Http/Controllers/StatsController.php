@@ -11,9 +11,9 @@ class StatsController extends Controller
 {
     public function member() 
     {
-        $member = LibraryMember::with(['class'])
+        $member = LibraryMember::with(['major'])
         ->get()
-        ->groupBy('class.class_fix')
+        ->groupBy('major.major')
         ->map(function ($group) {
             return [
                 'count' => $group->count(),
@@ -29,9 +29,9 @@ class StatsController extends Controller
 
     public function visitor()
     {
-        $visitor = Visitor::with(['class'])
+        $visitor = Visitor::with(['major'])
         ->get()
-        ->groupBy('class.class_fix')
+        ->groupBy('major.major')
         ->map(function ($group) {
             return [
                 'count' => $group->count(),
@@ -47,13 +47,13 @@ class StatsController extends Controller
 
     public function borrow()
     {
-        $borrow = Borrower::with(['class'])
+        $borrow = Borrower::with(['member'])
         ->get()
-        ->groupBy('class.class_fix')
+        ->groupBy('member.major.major')
         ->map(function ($group) {
             return [
                 'count' => $group->count(),
-                'visitor' => $group
+                'borrower' => $group
             ];
         });
 

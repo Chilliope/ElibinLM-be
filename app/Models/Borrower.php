@@ -17,8 +17,8 @@ class Borrower extends Model
         'updated_at'
     ];
 
-    function class() : BelongsTo {
-        return $this->belongsTo(ClassTable::class, 'class_id');
+    function member() : BelongsTo {
+        return $this->belongsTo(LibraryMember::class, 'member_id');
     }
 
     function book() : BelongsTo {

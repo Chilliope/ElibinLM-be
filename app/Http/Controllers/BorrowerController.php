@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Borrower;
 use App\Models\Gate;
+use App\Models\LibraryMember;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -17,7 +18,7 @@ class BorrowerController extends Controller
     public function index(Request $request)
     {
         // Mulai query dasar
-        $query = Borrower::with(['class', 'book']);
+        $query = Borrower::with(['member', 'book']);
 
         // Jika ada fromDate dan toDate, tambahkan whereBetween
         if ($request->fromDate && $request->toDate) {
@@ -37,16 +38,21 @@ class BorrowerController extends Controller
 
         foreach ($borrowings as $borrowing) {
             $code = $borrowing->borrowing_code;
+            $member = LibraryMember::where('id', $borrowing->member_id)->first();
 
             // Jika kode peminjaman belum ada, buat entry baru
             if (!isset($formattedBorrowings[$code])) {
                 $formattedBorrowings[$code] = [
-                    'name' => $borrowing->name,
-                    'class' => $borrowing->class->class_fix,
+                    'member_id' => $borrowing->member_id,
                     'total' => $borrowing->total,
                     'date_borrow' => $borrowing->date_of_borrowing,
                     'date_return' => $borrowing->date_of_return,
-                    'books' => [] // Tambahkan array kosong untuk daftar buku
+                    'status' => $borrowing->status,
+                    'books' => [], // Tambahkan array kosong untuk daftar buku
+                    'member' => [
+                        'name' => $borrowing->member->name,
+                        'major' => $borrowing->member->major->major,
+                    ]
                 ];
             }
 
@@ -90,6 +96,66 @@ class BorrowerController extends Controller
         ]);
     }
 
+    public function getAllBorrow(Request $request)
+    {
+        // Mulai query dasar
+        $query = Borrower::with(['member', 'book']);
+
+        // Jika ada fromDate dan toDate, tambahkan whereBetween
+        if ($request->fromDate && $request->toDate) {
+            // Set toDate ke akhir hari (23:59:59)
+            $toDate = Carbon::parse($request->toDate)->endOfDay();
+
+            // Tambahkan filter between
+            $query->whereBetween('date_of_borrowing', [$request->fromDate, $toDate]);
+        }
+
+        // Eksekusi query dan dapatkan semua hasil tanpa paginasi
+        $borrowings = $query->get();
+
+        // Array untuk menyimpan data terformat
+        $formattedBorrowings = [];
+
+        foreach ($borrowings as $borrowing) {
+            $code = $borrowing->borrowing_code;
+            $member = LibraryMember::where('id', $borrowing->member_id)->first();
+
+            // Jika kode peminjaman belum ada, buat entry baru
+            if (!isset($formattedBorrowings[$code])) {
+                $formattedBorrowings[$code] = [
+                    'member_id' => $borrowing->member_id,
+                    'total' => $borrowing->total,
+                    'date_borrow' => $borrowing->date_of_borrowing,
+                    'date_return' => $borrowing->date_of_return,
+                    'status' => $borrowing->status,
+                    'books' => [], // Tambahkan array kosong untuk daftar buku
+                    'member' => [
+                        'name' => $borrowing->member->name,
+                        'major' => $borrowing->member->major->major,
+                    ]
+                ];
+            }
+
+            // Tambahkan buku yang dipinjam ke dalam array 'books'
+            $formattedBorrowings[$code]['books'][] = [
+                'title' => $borrowing->book->title,
+                'writer' => $borrowing->book->writer,
+                'ISBN' => $borrowing->book->ISBN,
+                'publication_year' => $borrowing->book->publication_year
+            ];
+        }
+
+        // Hitung jumlah total peminjaman
+        $borrowCount = Borrower::count();
+
+        // Kembalikan response JSON tanpa pagination
+        return response()->json([
+            'status' => 'success',
+            'count' => $borrowCount,
+            'data' => $formattedBorrowings
+        ]);
+    }
+
     public function show($id)
     {
         $borrower = Borrower::where('id', $id)->with(['class', 'book'])->get();
@@ -103,8 +169,7 @@ class BorrowerController extends Controller
     public function store(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'name' => 'required',
-            'class_id' => 'required|exists:class,id',
+            'member_id' => 'required',
             'date_of_borrowing' => 'required',
             'date_of_return' => 'required'
         ]);
@@ -113,34 +178,27 @@ class BorrowerController extends Controller
             return response()->json($validate->errors(), 400);
         }
 
-        
+
         $getLastBorrowingCode = Borrower::latest()->first();
-        
+
         if ($getLastBorrowingCode) {
             $borrowingCode = $getLastBorrowingCode->borrowing_code + 1;
         } else {
             $borrowingCode = 1;
         }
-        
+
         $gate = Gate::get();
         // dd($gate);
 
         foreach ($gate as $gate) {
             $data = [
-                'name' => $request->name,
-                'class_id' => $request->class_id,
+                'member_id' => $request->member_id,
                 'book_id' => $gate->book_id,
                 'total' => $gate->total,
                 'date_of_borrowing' => $request->date_of_borrowing,
                 'date_of_return' => $request->date_of_return,
                 'borrowing_code' => $borrowingCode
             ];
-
-            $book = Book::where('id', $gate->book_id)->get();
-            foreach($book as $book) {
-                $book->stock = $book->stock - $gate->total;
-                $book->save();
-            }
 
             $borrower = Borrower::create($data);
         }
@@ -156,8 +214,7 @@ class BorrowerController extends Controller
     public function update(Request $request, $id)
     {
         $validate = Validator::make($request->all(), [
-            'name' => 'required',
-            'class_id' => 'required|exists:class,id',
+            'member_id' => 'required',
             'book_id' => 'required|exists:books,id',
             'amount' => 'required',
             'date_of_borrowing' => 'required',
@@ -195,9 +252,9 @@ class BorrowerController extends Controller
             ], 404);
         }
 
-        foreach($borrower as $borrower) {
+        foreach ($borrower as $borrower) {
             $book = Book::where('id', $borrower->book_id)->get();
-            foreach($book as $book) {
+            foreach ($book as $book) {
                 $book->stock = $book->stock + $borrower->total;
                 $book->save();
             }
@@ -206,5 +263,25 @@ class BorrowerController extends Controller
         }
 
         return response()->json([], 204);
+    }
+
+    public function borrowerReturn($id)
+    {
+        $borrower = Borrower::where('id', $id)->first();
+
+        if (!$borrower) {
+            return response()->json([
+                'status' => 'not found',
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        $borrower->status = 'dikembalikan';
+        $borrower->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Buku telah dikembalikan'
+        ], 201);
     }
 }

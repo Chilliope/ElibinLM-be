@@ -14,17 +14,20 @@ return new class extends Migration
         // migrasi peminjam buku perpustakaan
         Schema::create('borrowers', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // nama
-            $table->unsignedBigInteger('class_id'); // id kelas (table kelas)
+            $table->unsignedBigInteger('member_id');
             $table->unsignedBigInteger('book_id'); // id buku (table buku)
             $table->integer('total'); // jumlah buku
             $table->string('date_of_borrowing'); // tanggal peminjaman
             $table->string('date_of_return'); // tanggal pengembalian
             $table->string('borrowing_code'); // kode peminjaman    
+            $table->enum('status', [
+                'dipinjam',
+                'dikembalikan'
+            ])->default('dipinjam');
             $table->timestamps();
 
-            $table->foreign('class_id')->references('id')->on('class'); // relasi kelas
             $table->foreign('book_id')->references('id')->on('books'); // relasi buku
+            $table->foreign('member_id')->references('id')->on('library_members'); // relasi anggota
         });
     }
 

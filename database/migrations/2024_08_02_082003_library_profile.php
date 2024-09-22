@@ -30,13 +30,14 @@ return new class extends Migration
             // $table->string('land_width'); // luas tanah
             // $table->string('building_area'); // luas bangunan
             // $table->string('headmaster'); // nama kepala sekolah
-            // $table->string('head_librarian'); // nama kepala perpustakaan
+            $table->string('head_librarian')->nullable(); // nama kepala perpustakaan
             // $table->string('vision'); // visi
             // $table->string('mission'); // misi
             // $table->string('short_history'); // sejarah singkat
             // $table->string('opening_hours'); // jam buka
             // $table->string('library_activity'); // kegiatan perpustakaan
             $table->string('image')->nullable(); 
+            $table->string('signature')->nullable(); 
             $table->timestamps();
         });
     }

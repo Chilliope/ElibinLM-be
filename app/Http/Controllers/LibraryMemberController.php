@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ClassTable;
+use App\Models\Major;
 use App\Models\LibraryMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -13,8 +13,8 @@ class LibraryMemberController extends Controller
     public function index(Request $request)
     {
         $member = LibraryMember::where('name', 'like', '%' . $request->search . '%')
-        ->with(['class'])
-        ->paginate(10);
+            ->with(['major'])
+            ->paginate(10);
 
         $libraryMemberCount = LibraryMember::count();
 
@@ -25,11 +25,22 @@ class LibraryMemberController extends Controller
         ], 200);
     }
 
-    public function show($id) 
+    public function getMembersByIds(Request $request)
     {
-        $member = LibraryMember::with(['class'])
-                              ->where('id', $id)
-                              ->first();
+        $ids = $request->input('ids', []);
+        $members = LibraryMember::whereIn('id', $ids)->with('major')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $members
+        ], 200);
+    }
+
+    public function show($id)
+    {
+        $member = LibraryMember::with(['major'])
+            ->where('id', $id)
+            ->first();
 
         return response()->json([
             'status' => 'success',
@@ -46,27 +57,27 @@ class LibraryMemberController extends Controller
             'date_of_birth' => 'required',
             'phone' => 'required',
             'address' => 'required',
-            'class_id' => 'required',
+            'major_id' => 'required',
             'image' => 'required'
         ]);
 
-        if($validate->fails()) {
+        if ($validate->fails()) {
             return response()->json($validate->errors(), 404);
         }
 
-        $classCheck = ClassTable::where('id', $request->class_id)->exists();
+        $majorCheck = Major::where('id', $request->major_id)->exists();
 
-        if(!$classCheck) {
+        if (!$majorCheck) {
             return response()->json([
                 'status' => 'not found',
                 'message' => 'Kelas tidak ditemukan'
             ], 404);
         }
 
-        if($request->file('image')) {
+        if ($request->file('image')) {
             $file = $request->file('image');
             $fileExt = $file->getClientOriginalExtension();
-            $random = md5(uniqid(mt_rand(), true));                                                    
+            $random = md5(uniqid(mt_rand(), true));
 
             $newFileName = $random . '.' . $fileExt;
 
@@ -80,7 +91,7 @@ class LibraryMemberController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'phone' => $request->phone,
             'address' => $request->address,
-            'class_id' => $request->class_id,
+            'major_id' => $request->major_id,
             'image' => 'member-image/' . $newFileName
         ];
 
@@ -101,17 +112,17 @@ class LibraryMemberController extends Controller
             'date_of_birth' => 'required',
             'phone' => 'required',
             'address' => 'required',
-            'class_id' => 'required',
+            'major_id' => 'required',
             'image' => 'required'
         ]);
 
-        if($validate->fails()) {
+        if ($validate->fails()) {
             return response()->json($validate->errors(), 404);
         }
 
-        $classCheck = ClassTable::where('id', $request->class_id)->exists();
+        $majorCheck = Major::where('id', $request->major_id)->exists();
 
-        if(!$classCheck) {
+        if (!$majorCheck) {
             return response()->json([
                 'status' => 'not found',
                 'message' => 'Kelas tidak ditemukan'
@@ -120,19 +131,19 @@ class LibraryMemberController extends Controller
 
         $member = LibraryMember::where('id', $id)->first();
 
-        if(!$member) {
+        if (!$member) {
             return response()->json([
                 'status' => 'not found',
                 'message' => 'Anggota Perpustakaan tidak ditemukan'
             ], 404);
         }
 
-        if($request->file('image')) {
+        if ($request->file('image')) {
             Storage::delete($member->image);
 
             $file = $request->file('image');
             $fileExt = $file->getClientOriginalExtension();
-            $random = md5(uniqid(mt_rand(), true));                                                    
+            $random = md5(uniqid(mt_rand(), true));
 
             $newFileName = $random . '.' . $fileExt;
 
@@ -146,7 +157,7 @@ class LibraryMemberController extends Controller
         $member->date_of_birth = $request->date_of_birth;
         $member->phone = $request->phone;
         $member->address = $request->address;
-        $member->class_id = $request->class_id;
+        $member->major_id = $request->major_id;
         $member->save();
 
         return response()->json([
@@ -159,7 +170,7 @@ class LibraryMemberController extends Controller
     {
         $member = LibraryMember::where('id', $id)->first();
 
-        if(!$member) {
+        if (!$member) {
             return response()->json([
                 'status' => 'not found',
                 'message' => 'Anggota Perpustakaan tidak ditemukan'

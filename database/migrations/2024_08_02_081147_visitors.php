@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('visitors', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // nama
-            $table->unsignedBigInteger('class_id'); // id kelas (table kelas)
+            $table->unsignedBigInteger('major_id'); // id kelas (table kelas)
             $table->enum('role', [
                 'umum',
                 'guru',
@@ -24,7 +24,7 @@ return new class extends Migration
             ]);
             $table->timestamps();
 
-            $table->foreign('class_id')->references('id')->on('class'); // relasi kelas
+            $table->foreign('major_id')->references('id')->on('majors'); // relasi jurusan
         });
     }
 

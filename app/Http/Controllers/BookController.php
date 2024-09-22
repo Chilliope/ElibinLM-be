@@ -15,7 +15,8 @@ class BookController extends Controller
     {
         // Ambil buku berdasarkan pencarian
         $books = Book::where('title', 'like', '%' . $request->search . '%')
-            ->with(['rack'])
+            ->with(['rack', 'subBook'])
+            ->withCount('subBook')
             ->paginate(10);
     
         $bookCount = Book::count();
@@ -47,11 +48,9 @@ class BookController extends Controller
             'publisher' => 'required',
             'ISBN' => 'required',
             'publication_year' => 'required',
-            'book_spine_number' => 'required',
             'page_size' => 'required',
             'information' => 'required',
             'image' => 'required',
-            'stock' => 'required',
             'rack_id' => 'required'
         ]);
 
@@ -78,6 +77,8 @@ class BookController extends Controller
             $file->move('storage/book-image', $newFileName);
         }
 
+        $subjectId = $request->subject_id ?? null;
+
         $data = [
             'title' => $request->title,
             'slug' => Str::slug($request->title),
@@ -85,12 +86,11 @@ class BookController extends Controller
             'publisher' => $request->publisher,
             'ISBN' => $request->ISBN,
             'publication_year' => $request->publication_year,
-            'book_spine_number' => $request->book_spine_number,
             'page_size' => $request->page_size,
             'information' => $request->information,
             'image' =>  'book-image/' . $newFileName,
-            'stock' => $request->stock,
-            'rack_id' => $request->rack_id
+            'rack_id' => $request->rack_id,
+            'subject_id' => $subjectId
         ];
 
         $book = Book::create($data);
@@ -106,12 +106,9 @@ class BookController extends Controller
         $validate = Validator::make($request->all(), [
             'title' => 'required',
             'publisher' => 'required',
-            'ISBN' => 'required',
             'publication_year' => 'required',
-            'book_spine_number' => 'required',
             'page_size' => 'required',
             'information' => 'required',
-            'stock' => 'required',
             'rack_id' => 'required'
         ]);
 
@@ -154,16 +151,16 @@ class BookController extends Controller
             $book->image = 'book-image/' . $newFileName;
         }
 
+        $subjectId = $request->subject_id ?? null;
+
         $book->title = $request->title;
         $book->slug = Str::slug($request->title);   
         $book->publisher = $request->publisher;
-        $book->ISBN = $request->ISBN;
         $book->publication_year = $request->publication_year;
-        $book->book_spine_number = $request->book_spine_number;
         $book->page_size = $request->page_size;
         $book->information = $request->information;
-        $book->stock = $request->stock;
         $book->rack_id = $request->rack_id;
+        $book->subject_id = $subjectId;
         $book->save();
 
         return response()->json([

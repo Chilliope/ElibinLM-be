@@ -18,17 +18,16 @@ return new class extends Migration
             $table->string('slug');
             $table->string('writer'); // penulis
             $table->string('publisher'); // penerbit
-            $table->bigInteger('ISBN'); // International Standard Book Number
             $table->string('publication_year'); // tahun terbit
-            $table->string('book_spine_number'); // nomor punggung buku
             $table->integer('page_size'); // jumlah halaman
             $table->string('information'); // keterangan
             $table->string('image'); // foto buku
-            $table->integer('stock'); // stok buku
             $table->unsignedBigInteger('rack_id'); // rak buku
+            $table->unsignedBigInteger('subject_id')->nullable();
             $table->timestamps();
 
             $table->foreign('rack_id')->references('id')->on('racks'); // relasi rak
+            $table->foreign('subject_id')->references('id')->on('subjects'); // relasi subjek
         });
     }
 

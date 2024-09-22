@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('date_of_birth'); // tanggal lahir
             $table->string('phone'); // nomor telepon
             $table->string('address'); // alamat
-            $table->unsignedBigInteger('class_id'); // id kelas (table kelas)
+            $table->unsignedBigInteger('major_id'); // jurusan
             $table->string('image'); // profile picture
             $table->timestamps();
 
-            $table->foreign('class_id')->references('id')->on('class'); // relasi kelas
+            $table->foreign('major_id')->references('id')->on('majors'); // relasi jurusan
         });
     }
 

@@ -30,7 +30,7 @@ class LibrarySeeder extends Seeder
             // 'land_width' => '20',
             // 'building_area' => '20',
             // 'headmaster' => 'Mr.Lorem',
-            // 'head_librarian' => 'Ms.Ipsum',
+            'head_librarian' => 'Ms.Ipsum',
             // 'vision' => '-',
             // 'mission' => '-',
             // 'short_history' => '-',
