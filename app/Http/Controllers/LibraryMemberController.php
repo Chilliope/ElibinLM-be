@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Borrower;
 use App\Models\Major;
 use App\Models\LibraryMember;
 use Illuminate\Http\Request;
@@ -169,6 +170,13 @@ class LibraryMemberController extends Controller
     public function destroy($id)
     {
         $member = LibraryMember::where('id', $id)->first();
+        $borrow = Borrower::where('member_id', $id)->get();
+
+        if($borrow) {
+            foreach($borrow as $borrow) {
+                $borrow->delete();
+            }
+        }
 
         if (!$member) {
             return response()->json([

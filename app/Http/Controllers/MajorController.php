@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassTable;
+use App\Models\LibraryMember;
 use App\Models\Major;
+use App\Models\Visitor;
 use Illuminate\Http\Request;
 
 class MajorController extends Controller
@@ -90,11 +92,36 @@ class MajorController extends Controller
             ], 404);
         }
 
+        if($major->id == 1) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Tidak bisa dihapus'
+            ], 400);
+        }
+
         $class = ClassTable::where('major_id', $major->id)->get();
 
         if($class->isNotEmpty()) {
             foreach($class as $class) {
                 $class->delete();
+            }
+        }
+
+        $member = LibraryMember::where('major_id', $major->id)->get();
+
+        if($member->isNotEmpty()) {
+            foreach($member as $member) {
+                $member->major_id = 1;
+                $member->save();
+            }
+        }
+
+        $visitor = Visitor::where('major_id', $major->id)->get();
+
+        if($visitor->isNotEmpty()) {
+            foreach($visitor as $visitor) {
+                $visitor->major_id = 1;
+                $visitor->save();
             }
         }
 

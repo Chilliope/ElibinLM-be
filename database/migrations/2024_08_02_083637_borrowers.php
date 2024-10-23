@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('borrowers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('member_id');
-            $table->unsignedBigInteger('book_id'); // id buku (table buku)
+            // $table->unsignedBigInteger('book_id'); // id buku (table buku)
+            $table->string('book_title');
             $table->integer('total'); // jumlah buku
             $table->string('date_of_borrowing'); // tanggal peminjaman
             $table->string('date_of_return'); // tanggal pengembalian
@@ -26,7 +27,7 @@ return new class extends Migration
             ])->default('dipinjam');
             $table->timestamps();
 
-            $table->foreign('book_id')->references('id')->on('books'); // relasi buku
+            // $table->foreign('book_id')->references('id')->on('books'); // relasi buku
             $table->foreign('member_id')->references('id')->on('library_members'); // relasi anggota
         });
     }

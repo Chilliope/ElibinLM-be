@@ -44,6 +44,7 @@ class BorrowerController extends Controller
             if (!isset($formattedBorrowings[$code])) {
                 $formattedBorrowings[$code] = [
                     'member_id' => $borrowing->member_id,
+                    'book_title' => $borrowing->book_title,
                     'total' => $borrowing->total,
                     'date_borrow' => $borrowing->date_of_borrowing,
                     'date_return' => $borrowing->date_of_return,
@@ -58,10 +59,11 @@ class BorrowerController extends Controller
 
             // Tambahkan buku yang dipinjam ke dalam array 'books'
             $formattedBorrowings[$code]['books'][] = [
-                'title' => $borrowing->book->title,
-                'writer' => $borrowing->book->writer,
-                'ISBN' => $borrowing->book->ISBN,
-                'publication_year' => $borrowing->book->publication_year
+                'title' => $borrowing->book_title,
+                // 'title' => $borrowing->book->title,
+                // 'writer' => $borrowing->book->writer,
+                // 'ISBN' => $borrowing->book->ISBN,
+                // 'publication_year' => $borrowing->book->publication_year
             ];
         }
 
@@ -188,21 +190,30 @@ class BorrowerController extends Controller
         }
 
         $gate = Gate::get();
-        // dd($gate);
 
         foreach ($gate as $gate) {
-            $data = [
-                'member_id' => $request->member_id,
-                'book_id' => $gate->book_id,
-                'total' => $gate->total,
-                'date_of_borrowing' => $request->date_of_borrowing,
-                'date_of_return' => $request->date_of_return,
-                'borrowing_code' => $borrowingCode
-            ];
-
-            $borrower = Borrower::create($data);
+            // Ambil buku berdasarkan book_id
+            $book = Book::find($gate->book_id);
+            
+            // Pastikan buku ditemukan sebelum mengakses title
+            if ($book) {
+                $data = [
+                    'member_id' => $request->member_id,
+                    // 'book_id' => $gate->book_id,
+                    'book_title' => $book->title, // Mengambil title dari model Book
+                    'total' => $gate->total,
+                    'date_of_borrowing' => $request->date_of_borrowing,
+                    'date_of_return' => $request->date_of_return,
+                    'borrowing_code' => $borrowingCode
+                ];
+        
+                $borrower = Borrower::create($data);
+            } else {
+                // Tangani kasus ketika book_id tidak ditemukan
+                return response()->json(['error' => 'Book not found'], 404);
+            }
         }
-
+        
         $gate = Gate::truncate();
 
         return response()->json([

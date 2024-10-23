@@ -14,6 +14,7 @@ class MajorSeeder extends Seeder
     public function run(): void
     {
         $majors = [
+            'Tidak Ada',
             'PPLG',    // Pengembangan Perangkat Lunak dan Gim
             'TKJ',     // Teknik Komputer dan Jaringan
             'RPL',     // Rekayasa Perangkat Lunak

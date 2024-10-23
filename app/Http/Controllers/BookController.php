@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Borrower;
+use App\Models\Gate;
+use App\Models\SubBook;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -42,49 +44,52 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
+        // Validasi input
         $validate = Validator::make($request->all(), [
             'title' => 'required',
             'writer' => 'required',
             'publisher' => 'required',
-            'ISBN' => 'required',
             'publication_year' => 'required',
             'page_size' => 'required',
+            'isbn' => 'required',
             'information' => 'required',
             'image' => 'required',
             'rack_id' => 'required'
         ]);
-
-        if($validate->fails()) {
+    
+        if ($validate->fails()) {
             return response()->json($validate->errors(), 400);
         }
-
+    
+        // Cek apakah judul buku sudah ada
         $bookExisting = Book::where('title', $request->title)->exists();
-
-        if($bookExisting) {
+    
+        if ($bookExisting) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Judul buku sudah terdaftar dikoleksi'
             ], 400);
         }
-        
-        if($request->file('image')) {
+    
+        // Menghandle upload gambar
+        if ($request->file('image')) {
             $file = $request->file('image');
             $fileExt = $file->getClientOriginalExtension();
             $random = md5(uniqid(mt_rand(), true));                                                    
-
+    
             $newFileName = $random . '.' . $fileExt;
-
             $file->move('storage/book-image', $newFileName);
         }
-
-        $subjectId = $request->subject_id ?? null;
-
+    
+        $subjectId = $request->subject_id ?? 1;
+    
+        // Data untuk membuat buku baru
         $data = [
             'title' => $request->title,
             'slug' => Str::slug($request->title),
             'writer' => $request->writer,
             'publisher' => $request->publisher,
-            'ISBN' => $request->ISBN,
+            'isbn' => $request->isbn,
             'publication_year' => $request->publication_year,
             'page_size' => $request->page_size,
             'information' => $request->information,
@@ -92,14 +97,37 @@ class BookController extends Controller
             'rack_id' => $request->rack_id,
             'subject_id' => $subjectId
         ];
-
+    
+        // Membuat Book
         $book = Book::create($data);
-
+    
+        // Mendapatkan copy terakhir dari subBook berdasarkan book_id
+        $lastSubBook = SubBook::where('book_id', $book->id)->latest()->first();
+        $lastCopyNumber = $lastSubBook ? $lastSubBook->copy : 0; // Jika belum ada subBook, mulai dari 0
+    
+        // Loop untuk membuat subBook sesuai dengan jumlah stock yang diinginkan
+        for ($i = 1; $i <= $request->stock; $i++) {
+            // Membuat angka acak 3 digit untuk setiap subBook
+            $randomNumber = rand(100, 999);
+    
+            // Menyusun format copy yang diinginkan
+            $copy = $lastCopyNumber + $i;
+            $code = 'P' . $book->id . $randomNumber . $copy; // Format: P{book_id}{randomNumber}{copy}
+    
+            // Membuat subBook dengan copy dan code yang sudah disusun
+            SubBook::create([
+                'book_id' => $book->id,
+                'copy' => $copy,
+                'code' => $code
+            ]);
+        }
+    
+        // Mengembalikan response sukses
         return response()->json([
             'status' => 'success',
             'book' => $book->slug
         ], 201);
-    }
+    }    
 
     public function update(Request $request, $slug)
     {
@@ -109,7 +137,8 @@ class BookController extends Controller
             'publication_year' => 'required',
             'page_size' => 'required',
             'information' => 'required',
-            'rack_id' => 'required'
+            'isbn' => 'required'
+            // 'rack_id' => 'required'
         ]);
 
         if($validate->fails()) {
@@ -151,7 +180,17 @@ class BookController extends Controller
             $book->image = 'book-image/' . $newFileName;
         }
 
-        $subjectId = $request->subject_id ?? null;
+        if($request->subject_id) {
+            $subjectId = $request->subject_id;
+        } else {
+            $subjectId = null;
+        }
+
+        if($request->rack_id) {
+            $rackId = $request->rack_id;
+        } else {
+            $rackId = null;
+        }
 
         $book->title = $request->title;
         $book->slug = Str::slug($request->title);   
@@ -159,7 +198,8 @@ class BookController extends Controller
         $book->publication_year = $request->publication_year;
         $book->page_size = $request->page_size;
         $book->information = $request->information;
-        $book->rack_id = $request->rack_id;
+        $book->isbn = $request->isbn;
+        $book->rack_id = $rackId;
         $book->subject_id = $subjectId;
         $book->save();
 
@@ -169,9 +209,23 @@ class BookController extends Controller
         ], 201);
     }
 
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $book = Book::where('slug', $slug)->first();
+        $book = Book::where('id', $id)->first();
+        $subBook = SubBook::where('book_id', $id)->get();
+        $gate = Gate::where('book_id', $id)->get();
+
+        if($subBook) {
+            foreach($subBook as $subBook) {
+                $subBook->delete();
+            }
+        }
+
+        if($gate) {
+            foreach($gate as $gate) {
+                $gate->delete();
+            }
+        }
 
         if(!$book) {
             return response()->json([

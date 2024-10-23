@@ -123,7 +123,8 @@ class RackController extends Controller
 
         if($books->isNotEmpty()) {
             foreach ($books as $book) {
-                $book->delete();
+                $book->rack_id = null;
+                $book->save();
             }
         }
         

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -72,10 +73,26 @@ class SubjectController extends Controller
 
     public function destroy($id)
     {
-        $subject = Subject::where('id', $id)->delete();
+        $subject = Subject::where('id', $id)->first();
 
-        return response()->json([
-            'status' => 'success',
-        ], 204);
+        if($subject->id == 1) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'subjek ini tidak bisa dihapus'
+            ], 400);
+        } 
+
+        $books = Book::where('subject_id', $subject->id)->get();
+
+        if($books) {
+            foreach ($books as $book) {
+                $book->subject_id = 1;
+                $book->save();
+            }
+        }
+
+        $subject->delete();
+
+        return response()->json([], 204);
     }
 }

@@ -19,11 +19,12 @@ return new class extends Migration
             $table->string('writer'); // penulis
             $table->string('publisher'); // penerbit
             $table->string('publication_year'); // tahun terbit
+            $table->string('isbn')->unique(); // isbn
             $table->integer('page_size'); // jumlah halaman
             $table->string('information'); // keterangan
             $table->string('image'); // foto buku
-            $table->unsignedBigInteger('rack_id'); // rak buku
-            $table->unsignedBigInteger('subject_id')->nullable();
+            $table->unsignedBigInteger('rack_id')->nullable(); // rak buku
+            $table->unsignedBigInteger('subject_id')->default(1)->nullable();
             $table->timestamps();
 
             $table->foreign('rack_id')->references('id')->on('racks'); // relasi rak

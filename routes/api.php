@@ -52,7 +52,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('/book/{slug}', [BookController::class, 'show']);
         Route::post('/book', [BookController::class, 'store']);
         Route::post('/book/{slug}', [BookController::class, 'update']);
-        Route::delete('/book/{slug}', [BookController::class, 'destroy']); 
+        Route::delete('/book/{id}', [BookController::class, 'destroy']); 
 
         // sub book routes
         Route::get('/subBook/{bookId}', [SubBookController::class, 'index']);

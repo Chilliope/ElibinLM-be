@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('sub_books', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('book_id');
-            $table->bigInteger('ISBN')->unique();
             $table->integer('copy');
+            $table->string('code')->unique();
             $table->timestamps();
 
-            $table->foreign('book_id')->references('id')->on('books'); // relasi rak
+            $table->foreign('book_id')->references('id')->on('books'); // relasi buku
         });
     }
 
